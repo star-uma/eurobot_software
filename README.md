@@ -32,7 +32,7 @@ cd eurobot_software
 ./instalador_robot.sh
 ```
 ## Repositorios
-* [eurobot2027_software_vision](https://github.com/star-uma/eurobot_software_vision.git) - Paquetes de visión artificial.
-* [eurobot2027_software_control](https://github.com/star-uma/eurobot_software_control.git) - Nodos de control y navegación.
+* [eurobot2027_software_comun](https://github.com/star-uma/eurobot_software_comun.git) - Paquetes comunes tanto para robot real como simulación (descripción, visión, estrategia y anvegación).
+* [eurobot2027_software_control](https://github.com/star-uma/eurobot_software_control.git) - Parámetros del robot real.
 * [eurobot2027_software_simulacion](https://github.com/star-uma/eurobot_software_simulacion.git) - Entornos virtuales y modelo URDF en Gazebo.
 * [eurobot2027_software_firmware_esp32](https://github.com/star-uma/eurobot_software_firmware_esp32.git) - Código de bajo nivel para microcontroladores.

@@ -1,7 +1,7 @@
 repositories:
-  eurobot_software_vision:
+  eurobot_software_comun:
     type: git
-    url: https://github.com/star-uma/eurobot_software_vision.git
+    url: https://github.com/star-uma/eurobot_software_comun.git
     version: main
   eurobot_software_control:
     type: git
