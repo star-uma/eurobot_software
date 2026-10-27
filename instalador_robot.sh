@@ -37,13 +37,13 @@ sudo apt-mark hold liblz4-1 libzstd1
 sudo apt install ros-jazzy-ros-base python3-colcon-common-extensions python3-rosdep -y
 
 echo "3/5: Creando workspace y clonando repositorios..."
-WS_DIR="$(pwd)/eurobot2027_ws"
+WS_DIR="$(pwd)/eurobot_ws"
 
 mkdir -p $WS_DIR/src
 cd $WS_DIR/src
 
 git clone https://github.com/star-uma/eurobot_software_control.git
-git clone https://github.com/star-uma/eurobot_software_vision.git
+git clone https://github.com/star-uma/eurobot_software_comun.git
 
 echo "4/5: Resolviendo dependencias de hardware (rosdep)..."
 cd $WS_DIR
