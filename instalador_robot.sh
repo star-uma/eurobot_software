@@ -42,7 +42,7 @@ WS_DIR="$(pwd)/eurobot_ws"
 mkdir -p $WS_DIR/src
 cd $WS_DIR/src
 
-git clone https://github.com/star-uma/eurobot_software_control.git
+git clone https://github.com/star-uma/eurobot_software_real.git
 git clone https://github.com/star-uma/eurobot_software_comun.git
 
 echo "4/5: Resolviendo dependencias de hardware (rosdep)..."
