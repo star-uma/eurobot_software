@@ -5,7 +5,7 @@ repositories:
     version: main
   eurobot_software_control:
     type: git
-    url: https://github.com/star-uma/eurobot_software_control.git
+    url: https://github.com/star-uma/eurobot_software_real.git
     version: main
   eurobot_software_simulacion:
     type: git
