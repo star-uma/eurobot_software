@@ -33,6 +33,6 @@ cd eurobot_software
 ```
 ## Repositorios
 * [eurobot2027_software_comun](https://github.com/star-uma/eurobot_software_comun.git) - Paquetes comunes tanto para robot real como simulación (descripción, visión, estrategia y anvegación).
-* [eurobot2027_software_control](https://github.com/star-uma/eurobot_software_control.git) - Parámetros del robot real.
+* [eurobot2027_software_real](https://github.com/star-uma/eurobot_software_real.git) - Parámetros del robot real.
 * [eurobot2027_software_simulacion](https://github.com/star-uma/eurobot_software_simulacion.git) - Entornos virtuales y modelo URDF en Gazebo.
 * [eurobot2027_software_firmware_esp32](https://github.com/star-uma/eurobot_software_firmware_esp32.git) - Código de bajo nivel para microcontroladores.
