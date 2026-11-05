@@ -1,5 +1,5 @@
 # Eurobot 2027 - Meta-repositorio de Software
-p
+
 Este repositorio contiene el script de instalación automática para el ecosistema completo de ROS 2 del robot.
 
 ## Instalación completa
