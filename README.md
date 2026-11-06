@@ -31,6 +31,15 @@ cd eurobot_software
 # 3. Ejecuta el instalador automático
 ./instalador_robot.sh
 ```
+## Instalación de dependencias 
+
+```bash
+cd eurobot_ws
+sudo rosdep init
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y
+```
+
 ## Repositorios
 * [eurobot2027_software_comun](https://github.com/star-uma/eurobot_software_comun.git) - Paquetes comunes tanto para robot real como simulación (descripción, visión, estrategia y navegación).
 * [eurobot2027_software_real](https://github.com/star-uma/eurobot_software_real.git) - Parámetros del robot real.
