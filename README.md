@@ -40,6 +40,20 @@ rosdep update
 rosdep install --from-paths src --ignore-src -r -y
 ```
 
+# Mantenerse actualizado
+
+Repositorio actual:
+```bash
+git pull origin main
+```
+
+Resto de repositorios:
+```bash
+vcs pull eurobot_ws/src .
+```
+
+
+
 ## Repositorios
 * [eurobot2027_software_comun](https://github.com/star-uma/eurobot_software_comun.git) - Paquetes comunes tanto para robot real como simulación (descripción, visión, estrategia y navegación).
 * [eurobot2027_software_real](https://github.com/star-uma/eurobot_software_real.git) - Parámetros del robot real.
