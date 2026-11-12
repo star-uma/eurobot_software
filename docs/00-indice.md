@@ -8,9 +8,9 @@
 - [05 - Especificación de visión](05-especificacion-vision.md) → vision_node, ArUco, filtro lidar
 - [06 - Especificación de ros2_control](06-especificacion-ros2-control.md) → diff_cont, actuator_cont, controllers.yaml
 
-## Especificaciones de features (pendiente de escribir)
-- [09 - Control Xbox](09-especificacion-xbox.md) → Control remoto por mando Xbox (sim + real)
-- [10 - Actuador real](10-especificacion-actuador-real.md) → Rediseño del actuador: pilares laterales, barra rotativa, ventosas
+## Especificaciones de features
+- [09 - Control Xbox](09-especificacion-xbox.md) → Control remoto por mando Xbox (sim + real) — especificación escrita, paquete creado
+- [10 - Actuador real](10-especificacion-actuador-real.md) → Rediseño del actuador: pilares laterales, barra rotativa, ventosas — pendiente
 
 ## Guías
 - [07 - Guía de onboarding](07-guia-onboarding-companeros.md) → Cómo clonar, instalar, compilar, lanzar, añadir un nodo

@@ -4,13 +4,15 @@
 
 El repositorio raíz `eurobot_software` es un meta-repositorio que orquesta 4 sub-repositorios mediante `vcs import` (archivo `robot.repos`). Cada sub-repo contiene uno o más paquetes ROS 2.
 
-| Sub-repositorio                 | URL                                                 | Paquete(s) ROS 2                                      | Propósito                              |
-| ------------------------------- | --------------------------------------------------- | ----------------------------------------------------- | -------------------------------------- |
-| eurobot_software_comun          | github.com/star-uma/eurobot_software_comun          | eurobot_software_description, eurobot_software_vision | Código común a robot real y simulación |
-| eurobot_software_real           | github.com/star-uma/eurobot_software_real           | eurobot_software_real                                 | Parámetros del robot real              |
-| eurobot_software_simulacion     | github.com/star-uma/eurobot_software_simulacion     | eurobot_software_simulacion                           | Mundos Gazebo y launch de simulación   |
-| eurobot_software_firmware_esp32 | github.com/star-uma/eurobot_software_firmware_esp32 | — (PlatformIO/Arduino)                                | Firmware de bajo nivel ESP32           |
-
+| Sub-repositorio                                                                        | Paquete(s) ROS 2                                      | Propósito                              |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------- |
+| [eurobot_software_comun](github.com/star-uma/eurobot_software_comun)                   | eurobot_software_description, eurobot_software_vision, eurobot_software_xbox | Código común a robot real y simulación |
+| [eurobot_software_real](github.com/star-uma/eurobot_software_real)                     | eurobot_software_real                                 | Parámetros del robot real              |
+| [eurobot_software_simulacion](github.com/star-uma/eurobot_software_simulacion)         | eurobot_software_simulacion                           | Mundos Gazebo y launch de simulación   |
+| [eurobot_software_firmware_esp32](github.com/star-uma/eurobot_software_firmware_esp32) | PlatformIO/Arduino                               | Firmware de bajo nivel ESP32           |
+```text
+Nota: PlatformIO no es un paquete de ros2, está dentro de la estructura pero en la raíz del repositorio se encuentra el archivo vación COLCON_IGNORE, por tanto colcon no lo compilará como el resto de paquetes.
+```
 ## 2. Mapa de paquetes
 
 ### eurobot_software_description
@@ -20,13 +22,18 @@ Contiene la descripción del robot (URDF/Xacro), configuración y launch de esta
 - `urdf/robot_core.xacro` — Chasis, ruedas diferenciales, rueda loca, base_link.
 - `urdf/lidar.xacro` — Sensor GPU lidar en Gazebo (`/scan`).
 - `urdf/camara.xacro` — Cámara en Gazebo (`/camera/image_raw`) con corrección óptica OpenCV.
-- `urdf/actuador.xacro` — Torre fija, carro prismático (elevator_joint), cabezal de ventosas (prueba actual).
+- `urdf/actuador.xacro` — Torre fija, carro prismático (elevator_joint), cabezal de ventosas.
 - `urdf/ros2_control.xacro` — Definición de interfaces ros2_control.
 - `urdf/inertial_macros.xacro` — Macros de inercia reutilizables.
 - `config/parametros_robot.yaml` — Fuente única de verdad de parámetros físicos (base, actuator).
 - `config/controllers.yaml` — Configuración de controladores ros2_control (diff_cont, joint_broad, actuator_cont).
-- `config/joy_teleop.yaml`, `config/test_controllers.yaml` — Configuraciones adicionales (pendiente revisar uso).
+- `config/test_controllers.yaml` — Configuraciones adicionales (pendiente revisar uso).
 - `launch/rsp.launch.py` — Publica `robot_description` vía xacro, acepta `use_sim`, `use_sim_time`, `controllers_yaml`.
+
+### eurobot_software_xbox
+- `config/joy_teleop.yaml` — Configuración de mapeo del mando Xbox (movido desde `eurobot_software_description`).
+- `launch/xbox.launch.py` — Lanza el nodo de control por mando Xbox.
+- `eurobot_software_xbox/xbox_teleop.py` — Nodo `xbox_teleop_node`. Suscribe `/joy` (`sensor_msgs/Joy`) y publica `/cmd_vel` (`geometry_msgs/Twist`).
 
 ### eurobot_software_vision
 - `eurobot_software_vision/vision_node.py` — Nodo `vision_node`. Suscribe `/camera/image_raw`, detecta marcadores ArUco (diccionario 4X4_50), publica visualización con `cv2.imshow`.
@@ -52,7 +59,8 @@ Contiene la descripción del robot (URDF/Xacro), configuración y launch de esta
 | /camera/image_raw | sensor_msgs/Image     | Gazebo (cámara)                  | vision_node  | Imagen de la cámara          |
 | /scan             | sensor_msgs/LaserScan | Gazebo (lidar)                   | filtro_lidar | Escaneo lidar crudo          |
 | /scan_filtered    | sensor_msgs/LaserScan | filtro_lidar                     | —            | Escaneo filtrado (máx 1.0 m) |
-| /cmd_vel          | geometry_msgs/Twist   | teleop / nodo futuro             | diff_cont    | Comando de velocidad         |
+| /joy              | sensor_msgs/Joy       | nodo joy (driver mando)          | xbox_teleop_node | Entrada del mando Xbox      |
+| /cmd_vel          | geometry_msgs/Twist   | teleop / xbox_teleop_node        | diff_cont    | Comando de velocidad         |
 | /odom             | nav_msgs/Odometry     | diff_cont / Gazebo               | —            | Odometría del robot          |
 | /tf / /tf_static  | tf2_msgs/TFMessage    | robot_state_publisher, static_tf | —            | Árbol de transformaciones    |
 | /clock            | rosgraph_msgs/Clock   | Gazebo (bridge)                  | —            | Reloj de simulación          |
@@ -63,6 +71,7 @@ Contiene la descripción del robot (URDF/Xacro), configuración y launch de esta
 | --------------------- | ----------------------- | -------------------------- | --------------------------------- |
 | vision_node           | eurobot_software_vision | vision_node                | Detección ArUco en imagen         |
 | lidar_filter_node     | eurobot_software_vision | filtro_lidar               | Filtro de rango lidar             |
+| xbox_teleop_node      | eurobot_software_xbox   | xbox_teleop                | Lee /joy y publica /cmd_vel       |
 | robot_state_publisher | robot_state_publisher   | robot_state_publisher      | Publica TF y robot_description    |
 | joint_broad           | controller_manager      | spawner                    | Publica estados de articulaciones |
 | diff_cont             | controller_manager      | spawner                    | Controlador tracción diferencial  |
@@ -78,6 +87,7 @@ Contiene la descripción del robot (URDF/Xacro), configuración y launch de esta
 | sim.launch.py  | eurobot_software_simulacion  | Lanza Gazebo, robot, bridges y controladores en simulación |
 | rsp.launch.py  | eurobot_software_description | Publica descripción del robot (URDF vía xacro)             |
 | test.launch.py | eurobot_software_simulacion  | Launch de pruebas (pendiente detallar)                     |
+| xbox.launch.py | eurobot_software_xbox        | Lanza el nodo de control por mando Xbox                    |
 
 ## 6. Flujo de datos típico (simulación)
 

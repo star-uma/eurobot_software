@@ -68,7 +68,7 @@ ros2 run eurobot_software_vision filtro_lidar  # si se añade como entrypoint
 ## 6. Cómo añadir un nodo nuevo (flujo SDD)
 
 1. **Escribir la especificación SDD** en `docs/` usando `plantilla-especificacion.md`.
-2. **Crear el paquete** en el sub-repo correspondiente (normalmente `eurobot_software_comun`).
+2. **Crear el paquete** en el sub-repo correspondiente.
 3. **Añadir el nodo** al `setup.py` / `CMakeLists.txt` y registrar el entrypoint.
 4. **Actualizar launch files** si el nodo debe lanzarse automáticamente.
 5. **Compilar:** `colcon build --packages-select <nombre_paquete> --symlink-install`.
@@ -99,13 +99,11 @@ ros2 run <paquete> <nodo> --ros-args --log-level debug
 
 ## 8. Repositorios del proyecto
 
-| Repo | URL |
-|------|-----|
-| eurobot_software (meta) | https://github.com/star-uma/eurobot_software.git |
-| eurobot_software_comun | https://github.com/star-uma/eurobot_software_comun.git |
-| eurobot_software_real | https://github.com/star-uma/eurobot_software_real.git |
-| eurobot_software_simulacion | https://github.com/star-uma/eurobot_software_simulacion.git |
-| eurobot_software_firmware_esp32 | https://github.com/star-uma/eurobot_software_firmware_esp32.git |
+
+- [eurobot_software (meta)](https://github.com/star-uma/eurobot_software.git)
+- [eurobot_software_real](https://github.com/star-uma/eurobot_software_real.git)
+- [eurobot_software_simulacion](https://github.com/star-uma/eurobot_software_simulacion.git)
+- [eurobot_software_firmware_esp32](https://github.com/star-uma/eurobot_software_firmware_esp32.git)
 
 ## 9. Normas del equipo
 
