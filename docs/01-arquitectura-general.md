@@ -32,12 +32,12 @@ Contiene la descripción del robot (URDF/Xacro), configuración y launch de esta
 
 ### eurobot_software_xbox
 - `config/joy_teleop.yaml` — Configuración de mapeo del mando Xbox (movido desde `eurobot_software_description`).
-- `launch/xbox.launch.py` — Lanza el nodo de control por mando Xbox.
-- `eurobot_software_xbox/xbox_teleop.py` — Nodo `xbox_teleop_node`. Suscribe `/joy` (`sensor_msgs/Joy`) y publica `/cmd_vel` (`geometry_msgs/Twist`).
+- `launch/xbox.launch.py` — Lanza `joy_node` + `xbox_teleop_node`; acepta `use_sim_time`.
+- `eurobot_software_xbox/xbox_teleop.py` — Nodo `xbox_teleop_node`. Suscribe `/joy` (`sensor_msgs/Joy`) y `/joint_states` (`sensor_msgs/JointState`); publica `/cmd_vel` (`geometry_msgs/Twist`) y `/actuator_cont/joint_trajectory` (`trajectory_msgs/JointTrajectory`).
 
 ### eurobot_software_vision
 - `eurobot_software_vision/vision_node.py` — Nodo `vision_node`. Suscribe `/camera/image_raw`, detecta marcadores ArUco (diccionario 4X4_50), publica visualización con `cv2.imshow`.
-- `eurobot_software_vision/filtro_lidar.py` — Nodo `lidar_filter_node`. Suscribe `/scan`, filtra rangos > 1.0 m (los pone a inf), publica `/scan_filtered`.
+- `eurobot_software_vision/filtro_lidar.py` — Prototipo no integrado: suscribe `/scan`, filtra rangos > 1.0 m y publica `/scan_filtered`. **No tiene entrypoint en `setup.py`**, por lo que no se puede lanzar con `ros2 run` actualmente.
 
 ### eurobot_software_simulacion
 - `worlds/eurobot.sdf` — Mundo principal de Gazebo Ignition.
@@ -57,21 +57,26 @@ Contiene la descripción del robot (URDF/Xacro), configuración y launch de esta
 | Topic             | Tipo                  | Publicador                       | Suscriptor   | Descripción                  |
 | ----------------- | --------------------- | -------------------------------- | ------------ | ---------------------------- |
 | /camera/image_raw | sensor_msgs/Image     | Gazebo (cámara)                  | vision_node  | Imagen de la cámara          |
-| /scan             | sensor_msgs/LaserScan | Gazebo (lidar)                   | filtro_lidar | Escaneo lidar crudo          |
-| /scan_filtered    | sensor_msgs/LaserScan | filtro_lidar                     | —            | Escaneo filtrado (máx 1.0 m) |
-| /joy              | sensor_msgs/Joy       | nodo joy (driver mando)          | xbox_teleop_node | Entrada del mando Xbox      |
+| /scan             | sensor_msgs/LaserScan | Gazebo (lidar)                   | — (filtro_lidar no integrado) | Escaneo lidar crudo |
+| /scan_filtered    | sensor_msgs/LaserScan | filtro_lidar (prototipo)         | —            | Escaneo filtrado (máx 1.0 m) |
+| /joy              | sensor_msgs/Joy       | joy_node (driver mando)          | xbox_teleop_node | Entrada del mando Xbox   |
 | /cmd_vel          | geometry_msgs/Twist   | teleop / xbox_teleop_node        | diff_cont    | Comando de velocidad         |
-| /odom             | nav_msgs/Odometry     | diff_cont / Gazebo               | —            | Odometría del robot          |
-| /tf / /tf_static  | tf2_msgs/TFMessage    | robot_state_publisher, static_tf | —            | Árbol de transformaciones    |
-| /clock            | rosgraph_msgs/Clock   | Gazebo (bridge)                  | —            | Reloj de simulación          |
+| /actuator_cont/joint_trajectory | trajectory_msgs/JointTrajectory | xbox_teleop_node | actuator_cont | Objetivo de posición del actuador |
+| /joint_states     | sensor_msgs/JointState | joint_broad                     | xbox_teleop_node | Posiciones de las articulaciones |
+| /dynamic_joint_states | control_msgs/DynamicJointState | controller_manager | —     | Estados dinámicos de ros2_control |
+| /robot_description | std_msgs/String      | robot_state_publisher            | —            | Descripción URDF del robot   |
+| /diff_cont/odom   | nav_msgs/Odometry     | diff_cont                        | —            | Odometría real (~18 Hz)      |
+| /odom             | nav_msgs/Odometry     | ros_gz_bridge                    | —            | Bridge de Gazebo (sin datos) |
+| /tf / /tf_static  | tf2_msgs/TFMessage    | diff_cont, robot_state_publisher, ros_gz_bridge | — | Árbol de transformaciones |
+| /clock            | rosgraph_msgs/Clock   | Gazebo (bridge)                  | diff_cont    | Reloj de simulación          |
 
 ## 4. Nodos principales
 
 | Nodo                  | Paquete                 | Executable                 | Función                           |
 | --------------------- | ----------------------- | -------------------------- | --------------------------------- |
 | vision_node           | eurobot_software_vision | vision_node                | Detección ArUco en imagen         |
-| lidar_filter_node     | eurobot_software_vision | filtro_lidar               | Filtro de rango lidar             |
-| xbox_teleop_node      | eurobot_software_xbox   | xbox_teleop                | Lee /joy y publica /cmd_vel       |
+| lidar_filter_node     | eurobot_software_vision | — (sin entrypoint)         | Filtro de rango lidar (prototipo) |
+| xbox_teleop_node      | eurobot_software_xbox   | xbox_teleop_node           | Lee /joy y publica /cmd_vel + trayectoria del actuador |
 | robot_state_publisher | robot_state_publisher   | robot_state_publisher      | Publica TF y robot_description    |
 | joint_broad           | controller_manager      | spawner                    | Publica estados de articulaciones |
 | diff_cont             | controller_manager      | spawner                    | Controlador tracción diferencial  |
@@ -87,7 +92,7 @@ Contiene la descripción del robot (URDF/Xacro), configuración y launch de esta
 | sim.launch.py  | eurobot_software_simulacion  | Lanza Gazebo, robot, bridges y controladores en simulación |
 | rsp.launch.py  | eurobot_software_description | Publica descripción del robot (URDF vía xacro)             |
 | test.launch.py | eurobot_software_simulacion  | Launch de pruebas (pendiente detallar)                     |
-| xbox.launch.py | eurobot_software_xbox        | Lanza el nodo de control por mando Xbox                    |
+| xbox.launch.py | eurobot_software_xbox        | Lanza `joy_node` + `xbox_teleop_node` (acepta `use_sim_time`) |
 
 ## 6. Flujo de datos típico (simulación)
 
@@ -95,7 +100,7 @@ Contiene la descripción del robot (URDF/Xacro), configuración y launch de esta
 2. Gazebo publica `/camera/image_raw`, `/scan`, `/odom`, `/clock`, `/tf`.
 3. `rsp.launch.py` genera `robot_description` a partir de xacro + `parametros_robot.yaml` + `controllers.yaml`.
 4. `parameter_bridge` traduce temas Gazebo ↔ ROS 2.
-5. `diff_cont` recibe `/cmd_vel` y mueve las ruedas en Gazebo; publica `/odom` y `/tf`.
+5. `diff_cont` recibe `/cmd_vel` y mueve las ruedas en Gazebo; publica `/diff_cont/odom` y `/tf`.
 6. `vision_node` procesa `/camera/image_raw` y detecta ArUco.
 7. `filtro_lidar` procesa `/scan` y publica `/scan_filtered`.
 8. `static_tf` publica `map → odom` (provisional).
